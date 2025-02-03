@@ -5,11 +5,11 @@ using UnityEngine;
 public class AStarScanner : MonoBehaviour {
     public Action<AStarNode[]> executeResultEvent;
     public Action<AStarScanner, AStarNode> checkScanEvent;
-    [SerializeField] private List<AStarNode> gainedSteps;
-    [SerializeField] private List<AStarNode> reTracedSteps;
-    [SerializeField] private List<AStarNode> fastestPathSteps;
     [SerializeField] private bool useUpdate;
     private Dictionary<string, AStarNode> dictScannedSteps;
+    private List<AStarNode> gainedSteps;
+    private List<AStarNode> reTracedSteps;
+    private List<AStarNode> fastestPathSteps;
     private Vector3 startingPosition;
     private Vector3 targetPosition;
     private Vector3 usedVector;
@@ -20,6 +20,8 @@ public class AStarScanner : MonoBehaviour {
     public void Init() {
         dictScannedSteps = new Dictionary<string, AStarNode>();
         gainedSteps = new List<AStarNode>();
+        reTracedSteps = new List<AStarNode>();
+        fastestPathSteps = new List<AStarNode>();
         usedVector = new Vector3(1, 0, 1);
         targetPosition = default;
     }

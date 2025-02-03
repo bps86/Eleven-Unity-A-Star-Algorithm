@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "A Star Algorithm Test.sln"
+    "dotnet.defaultSolution": "Eleven-Unity-A-Star-Algorithm.sln"
 }
