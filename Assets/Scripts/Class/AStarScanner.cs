@@ -91,7 +91,6 @@ public class AStarScanner : MonoBehaviour {
             }
             gainedSteps.Add(node);
             currentNodePosition = node.position;
-            Debug.Log(node.GetNodeID());
             if (node.position == targetPosition) {
                 fastestPathSteps.Add(new AStarNode(startingPosition, targetPosition, targetPosition));
                 PerformReTrace();
@@ -106,7 +105,6 @@ public class AStarScanner : MonoBehaviour {
     }
 
     public void ConfirmNodeCollider(AStarNode node) {
-        Debug.Log($"{node.GetNodeID()} {node.isACollider}");
         dictScannedSteps.Add(node.GetNodeID(), node);
     }
 
