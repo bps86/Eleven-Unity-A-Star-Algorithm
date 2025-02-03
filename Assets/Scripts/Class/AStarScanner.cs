@@ -20,6 +20,8 @@ public class AStarScanner : MonoBehaviour {
     public void Init() {
         dictScannedSteps = new Dictionary<string, AStarNode>();
         gainedSteps = new List<AStarNode>();
+        reTracedSteps = new List<AStarNode>();
+        fastestPathSteps = new List<AStarNode>();
         usedVector = new Vector3(1, 0, 1);
         targetPosition = default;
     }
