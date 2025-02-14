@@ -1,7 +1,5 @@
-using System;
 using UnityEngine;
 
-[Serializable]
 public struct AStarNode {
     public Vector3 position;
     public float gCost;

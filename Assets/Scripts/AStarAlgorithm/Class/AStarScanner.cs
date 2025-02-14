@@ -5,12 +5,13 @@ using UnityEngine;
 public class AStarScanner : MonoBehaviour {
     public Action<AStarNode[]> executeResultEvent;
     public Action<AStarScanner, AStarNode> checkScanEvent;
-    [SerializeField] private List<AStarNode> gainedSteps;
-    [SerializeField] private List<AStarNode> reTracedSteps;
-    [SerializeField] private List<AStarNode> fastestPathSteps;
     [SerializeField] private bool useUpdate;
     private Dictionary<string, AStarNode> dictScannedSteps;
+    private List<AStarNode> gainedSteps;
+    private List<AStarNode> reTracedSteps;
+    private List<AStarNode> fastestPathSteps;
     private Vector3 startingPosition;
+    private Vector3 currentNodePosition;
     private Vector3 targetPosition;
     private Vector3 usedVector;
     private bool reScan;
@@ -22,12 +23,13 @@ public class AStarScanner : MonoBehaviour {
         gainedSteps = new List<AStarNode>();
         reTracedSteps = new List<AStarNode>();
         fastestPathSteps = new List<AStarNode>();
+        currentNodePosition = new Vector3();
         usedVector = new Vector3(1, 0, 1);
         targetPosition = default;
     }
 
     public void StartScan(Vector3 targetPos) {
-        startingPosition = RoundVector(new Vector3(transform.position.x, transform.position.y, transform.position.z));
+        startingPosition = RoundVector(new Vector3(currentNodePosition.x, currentNodePosition.y, currentNodePosition.z));
         targetPosition = RoundVector(new Vector3(targetPos.x, targetPos.y, targetPos.z));
         PrepareScan();
     }
@@ -54,7 +56,7 @@ public class AStarScanner : MonoBehaviour {
         gainedSteps.Clear();
         reTracedSteps.Clear();
         fastestPathSteps.Clear();
-        transform.position = startingPosition;
+        currentNodePosition = startingPosition;
         gainedSteps.Add(new AStarNode(startingPosition, startingPosition, targetPosition));
         dictScannedSteps.Add(GetNodeID(startingPosition), gainedSteps[0]);
         PerformScanXZ();
@@ -88,8 +90,7 @@ public class AStarScanner : MonoBehaviour {
                 }
             }
             gainedSteps.Add(node);
-            transform.position = node.position;
-            Debug.Log(node.GetNodeID());
+            currentNodePosition = node.position;
             if (node.position == targetPosition) {
                 fastestPathSteps.Add(new AStarNode(startingPosition, targetPosition, targetPosition));
                 PerformReTrace();
@@ -104,7 +105,6 @@ public class AStarScanner : MonoBehaviour {
     }
 
     public void ConfirmNodeCollider(AStarNode node) {
-        Debug.Log($"{node.GetNodeID()} {node.isACollider}");
         dictScannedSteps.Add(node.GetNodeID(), node);
     }
 
@@ -132,7 +132,7 @@ public class AStarScanner : MonoBehaviour {
             }
         }
         fastestPathSteps.Add(node);
-        transform.position = node.position;
+        currentNodePosition = node.position;
         if (node.position == startingPosition) {
             executeResultEvent?.Invoke(fastestPathSteps.ToArray());
         } else {
@@ -145,27 +145,28 @@ public class AStarScanner : MonoBehaviour {
     }
 
     private void CheckNode(Vector3 nodePosition) {
-        if (startingPosition == transform.position + nodePosition) return;
+        if (startingPosition == currentNodePosition + nodePosition) return;
 
         AStarNode node;
-        if (!dictScannedSteps.ContainsKey(GetNodeID(transform.position + nodePosition))) {
-            node = new AStarNode(transform.position, transform.position + nodePosition, targetPosition, GetPreviousGCost());
+        if (!dictScannedSteps.ContainsKey(GetNodeID(currentNodePosition + nodePosition))) {
+            node = new AStarNode(currentNodePosition, currentNodePosition + nodePosition, targetPosition, GetPreviousGCost());
             if (!dictScannedSteps.ContainsKey(node.GetNodeID())) {
                 checkScanEvent.Invoke(this, node);
             }
         } else {
-            node = dictScannedSteps[GetNodeID(transform.position + nodePosition)];
+            node = dictScannedSteps[GetNodeID(currentNodePosition + nodePosition)];
             if (!gainedSteps.Contains(node)) {
-                node.UpdateNode(transform.position, transform.position + nodePosition, targetPosition, GetPreviousGCost());
+                node.UpdateNode(currentNodePosition, currentNodePosition + nodePosition, targetPosition, GetPreviousGCost());
             }
         }
     }
 
     private void ReTraceNode(Vector3 nodePosition) {
-        if (!dictScannedSteps.ContainsKey(GetNodeID(transform.position + nodePosition))) return;
-        if (!gainedSteps.Contains(dictScannedSteps[GetNodeID(transform.position + nodePosition)])) return;
+        if (!dictScannedSteps.ContainsKey(GetNodeID(currentNodePosition + nodePosition))) return;
+        if (!gainedSteps.Contains(dictScannedSteps[GetNodeID(currentNodePosition + nodePosition)])) return;
+        if (!fastestPathSteps.Contains(dictScannedSteps[GetNodeID(currentNodePosition + nodePosition)])) return;
 
-        reTracedSteps.Add(dictScannedSteps[GetNodeID(transform.position + nodePosition)]);
+        reTracedSteps.Add(dictScannedSteps[GetNodeID(currentNodePosition + nodePosition)]);
     }
 
     private Vector3 RoundVector(Vector3 vector3) {
@@ -180,8 +181,8 @@ public class AStarScanner : MonoBehaviour {
     }
 
     private float GetPreviousGCost() {
-        if (dictScannedSteps.ContainsKey(GetNodeID(transform.position))) {
-            return dictScannedSteps[GetNodeID(transform.position)].gCost;
+        if (dictScannedSteps.ContainsKey(GetNodeID(currentNodePosition))) {
+            return dictScannedSteps[GetNodeID(currentNodePosition)].gCost;
         } else {
             return 0;
         }
