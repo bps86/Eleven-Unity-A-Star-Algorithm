@@ -20,6 +20,22 @@ public class AStarManager : MonoBehaviour {
         }
     }
 
+    public void AddAStarScanner(AStarScanner value) {
+        if (aStarScanners.Contains(value)) return;
+
+        value.Init();
+        value.checkScanEvent += OnCheckScan;
+        aStarScanners.Add(value);
+    }
+
+    public void AddColliderTransform(Transform value) {
+        colliderIDs.Add(GetNodeID(value.position));
+    }
+
+    public void AddColliderVector3(Vector3 value) {
+        colliderIDs.Add(GetNodeID(value));
+    }
+
     private void OnCheckScan(AStarScanner aStarScanner, AStarNode aStarNode) {
         for (int i = 0; i < colliderIDs.Count; i++) {
             if (CheckNodeCollider(ref aStarNode, i)) {
