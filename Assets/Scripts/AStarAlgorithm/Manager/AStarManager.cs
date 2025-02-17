@@ -36,6 +36,18 @@ public class AStarManager : MonoBehaviour {
         colliderIDs.Add(GetNodeID(value));
     }
 
+    public void SetColliderIDs(List<string> value) {
+        colliderIDs = value;
+    }
+
+    public List<string> CreateColliderIDs(List<Vector3> colliderPositions) {
+        List<string> newColliderIDs = new List<string>();
+        for (int i = 0; i < colliderPositions.Count; i++) {
+            newColliderIDs.Add(GetNodeID(colliderPositions[i]));
+        }
+        return newColliderIDs;
+    }
+
     private void OnCheckScan(AStarScanner aStarScanner, AStarNode aStarNode) {
         for (int i = 0; i < colliderIDs.Count; i++) {
             if (CheckNodeCollider(ref aStarNode, i)) {
