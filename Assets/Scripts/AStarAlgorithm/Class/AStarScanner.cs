@@ -134,6 +134,7 @@ public class AStarScanner : MonoBehaviour {
         fastestPathSteps.Add(node);
         currentNodePosition = node.position;
         if (node.position == startingPosition) {
+            fastestPathSteps.Reverse();
             executeResultEvent?.Invoke(fastestPathSteps.ToArray());
         } else {
             if (useUpdate) {
