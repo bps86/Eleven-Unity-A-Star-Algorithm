@@ -164,7 +164,7 @@ public class AStarScanner : MonoBehaviour {
     private void ReTraceNode(Vector3 nodePosition) {
         if (!dictScannedSteps.ContainsKey(GetNodeID(currentNodePosition + nodePosition))) return;
         if (!gainedSteps.Contains(dictScannedSteps[GetNodeID(currentNodePosition + nodePosition)])) return;
-        if (!fastestPathSteps.Contains(dictScannedSteps[GetNodeID(currentNodePosition + nodePosition)])) return;
+        if (fastestPathSteps.Contains(dictScannedSteps[GetNodeID(currentNodePosition + nodePosition)])) return;
 
         reTracedSteps.Add(dictScannedSteps[GetNodeID(currentNodePosition + nodePosition)]);
     }
