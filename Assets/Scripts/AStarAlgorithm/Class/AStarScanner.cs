@@ -37,7 +37,15 @@ public class AStarScanner : MonoBehaviour {
     public void StartScan(Vector3 targetPos, Vector3 startingPos) {
         startingPosition = RoundVector(new Vector3(startingPos.x, startingPos.y, startingPos.z));
         targetPosition = RoundVector(new Vector3(targetPos.x, targetPos.y, targetPos.z));
-        PrepareScan();
+        if (Vector3.Distance(startingPos, targetPos) <= 1f) {
+            fastestPathSteps.Clear();
+            fastestPathSteps.Add(new AStarNode {
+                position = targetPos
+            });
+            executeResultEvent?.Invoke(fastestPathSteps.ToArray());
+        } else {
+            PrepareScan();
+        }
     }
 
     private void Update() {
